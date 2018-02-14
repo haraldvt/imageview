@@ -6,6 +6,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -82,19 +84,24 @@ class TimedAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-    File fotoFile = geefVolgendeFoto();
-        if (fotoFile != null) {
-            foto.setFoto(fotoFile.getAbsolutePath());
-            addDate(foto);
-            addFotoText(foto, fotoFile.getParent());
-            basisFrame.repaint();
+        try {
+            File fotoFile = geefVolgendeFoto();
+            if (fotoFile != null) {
+                foto.setFoto(fotoFile.getAbsolutePath());
+                addDate(foto);
+                addFotoText(foto, fotoFile.getParent());
+                basisFrame.repaint();
+            }
+        } catch(Exception ex) {
+            System.out.println(ex.getMessage());
+            ex.printStackTrace();
         }
     }
 
-    private final int fotoTextFontSize = 40;
+    private final int fotoTextFontSize = 50;
     private final int fotoTextLineSize = fotoTextFontSize + 8;
     private final int fotoTextYStart = 830;
-    private final int fotoTextXStart = 1440;
+    private final int fotoTextXStart = 1140;
     private final JLabel[] fotoTextLabel = {new JLabel(), new JLabel(), new JLabel(), new JLabel(), new JLabel(), new JLabel(), new JLabel()};
     
     private final int dateFontSize = 72;
@@ -126,25 +133,32 @@ class TimedAction implements ActionListener {
     
     // hm de library kan dit 
     private String bepaalMaand(String beschrijving) {
-        int i = beschrijving.indexOf("-");
-        if (i>0) {
-            switch (beschrijving.substring(i+1, i+3)){
-                case "01": return "januari ";
-                case "02": return "februari ";
-                case "03": return "maart ";
-                case "04": return "april ";
-                case "05": return "mei ";
-                case "06": return "juni ";
-                case "07": return "juli ";
-                case "08": return "augustus ";
-                case "09": return "september ";
-                case "10": return "oktober ";
-                case "11": return "november ";
-                case "12": return "december ";
-                default: return "";
+        try {
+            int i = beschrijving.indexOf("-");
+            if (i>0) {
+                switch (beschrijving.substring(i+1, i+3)){
+                    case "01": return "januari ";
+                    case "02": return "februari ";
+                    case "03": return "maart ";
+                    case "04": return "april ";
+                    case "05": return "mei ";
+                    case "06": return "juni ";
+                    case "07": return "juli ";
+                    case "08": return "augustus ";
+                    case "09": return "september ";
+                    case "10": return "oktober ";
+                    case "11": return "november ";
+                    case "12": return "december ";
+                    default: return "";
+                }
             }
+        } catch (Exception e) {
+            // slik...
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        } finally {
+            return "";
         }
-        return "";
     }
     
     private double addFotoTextLabel(int regelnr, String text, ImageComponent foto) {
@@ -197,10 +211,12 @@ class TimedAction implements ActionListener {
     private void refreshLabels(ImageComponent foto, JLabel[] labels) {
         for (int j = 0; j < labels.length; j++) {
             if (labels[j] != null) {
+                labels[j].setText("");
+                labels[j].removeAll();
                 foto.remove(labels[j]);
-                labels[j] = null;
+                //labels[j] = null;
             }
-            labels[j] = new JLabel();
+            //labels[j] = new JLabel();
         }
     }
 }
