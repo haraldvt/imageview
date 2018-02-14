@@ -85,13 +85,21 @@ class TimedAction implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         try {
-            File fotoFile = geefVolgendeFoto();
-            if (fotoFile != null) {
-                foto.setFoto(fotoFile.getAbsolutePath());
-                addDate(foto);
-                addFotoText(foto, fotoFile.getParent());
-                basisFrame.repaint();
+            SimpleDateFormat format = new SimpleDateFormat("HHmm", Locale.forLanguageTag("NL"));
+            String tijd = format.format(Calendar.getInstance().getTime());
+            if (tijd.compareTo("0700") > 0) {  // tussen 0 en 7 niets tonen
+                
+                File fotoFile = geefVolgendeFoto();
+                if (fotoFile != null) {
+                    foto.setFoto(fotoFile.getAbsolutePath());
+                    addDate(foto);
+                    addFotoText(foto, fotoFile.getParent());
+                    basisFrame.repaint();
+                }
+            } else {
+                System.exit(0);
             }
+            
         } catch(Exception ex) {
             System.out.println(ex.getMessage());
             ex.printStackTrace();
