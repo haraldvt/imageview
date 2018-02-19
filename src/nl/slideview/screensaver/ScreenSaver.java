@@ -37,7 +37,9 @@ public final class ScreenSaver {
 
             int timeIntervalInSeconds = (properties.getProperty("timeIntervalInSeconds") == null ? 10
                     : Integer.parseInt(properties.getProperty("timeIntervalInSeconds")));
-            new ScreenSaver(timeIntervalInSeconds, properties.getProperty("photoDirectory"));
+            String photoDirExcludes = (properties.getProperty("excludes") == null ? ""
+                    : properties.getProperty("excludes"));
+            new ScreenSaver(timeIntervalInSeconds, properties.getProperty("photoDirectory"), properties.getProperty("excludes"));
         } catch (Exception e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
@@ -60,7 +62,7 @@ public final class ScreenSaver {
 //        }
 //    }
 
-    public ScreenSaver(int timeIntervalInSeconds, String photoDirectory) throws Exception {
+    public ScreenSaver(int timeIntervalInSeconds, String photoDirectory, String photoDirExcludes) throws Exception {
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
         final JFrame screenSaverFrame = new JFrame();
@@ -79,7 +81,7 @@ public final class ScreenSaver {
 
         foto.setTotalSpace(screenSaverFrame.getSize().getWidth(), screenSaverFrame.getSize().getHeight());
 
-        Timer timer = new Timer(timeIntervalInSeconds * 1000, new TimedAction(screenSaverFrame, foto, photoDirectory));
+        Timer timer = new Timer(timeIntervalInSeconds * 1000, new TimedAction(screenSaverFrame, foto, photoDirectory, photoDirExcludes));
         System.out.println("start FotoTimer, aantal seconden: " + timeIntervalInSeconds);
         timer.start();
 
@@ -165,8 +167,9 @@ public final class ScreenSaver {
             prop.load(input);
 
             // get the property value and print it out
-            System.out.println(prop.getProperty("timeIntervalInSeconds"));
-            System.out.println(prop.getProperty("photoDirectory"));
+            System.out.println("timeIntervalInSeconds: " + prop.getProperty("timeIntervalInSeconds"));
+            System.out.println("photoDirectory: " + prop.getProperty("photoDirectory"));
+            System.out.println("Excludes: " + prop.getProperty("excludes"));
 
         } catch (IOException ex) {
             ex.printStackTrace();

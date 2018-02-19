@@ -14,6 +14,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
+import java.util.StringTokenizer;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -22,64 +23,88 @@ class TimedAction implements ActionListener {
 
     private final JFrame basisFrame;
 
-    private final ImageComponent foto;
+    private final ImageComponent photo;
 
-    private final String fotoDirectory;
+    private final String photoDirectory;
+
+    private final String[] excludes;
+
+    private int entryPoint;
 
     private int i;
 
-    private List<File> fotos = new ArrayList<>();
+    private List<File> photos = new ArrayList<>();
 
-    public TimedAction(JFrame basisFrame, ImageComponent foto, String fotoDirectory) {
+    public TimedAction(JFrame basisFrame, ImageComponent foto, String photoDirectory, String photoDirExcludes) {
         this.basisFrame = basisFrame;
-        this.foto = foto;
-        this.fotoDirectory = fotoDirectory;
+        this.photo = foto;
+        this.photoDirectory = photoDirectory;
+        excludes = (photoDirExcludes != null ? photoDirExcludes.split(",") : new String[0]);
 
         leesFotoVerzameling();
     }
 
     private void leesFotoVerzameling() {
-        fotos = new ArrayList<>();
-        leesFotoDirRecursief(fotoDirectory, fotos);
-        if (!fotos.isEmpty()) {
-            i = new Random().nextInt(fotos.size());
+        photos = new ArrayList<>();
+        leesFotoDirRecursief(photoDirectory, photos);
+        if (!photos.isEmpty()) {
+            entryPoint = new Random().nextInt(photos.size());
+            System.out.println("Total number of photo's: " + photos.size() + ", entryPoint: " + entryPoint);
+            i = entryPoint;
+            i=0;
         } else {
             i = -1;
         }
     }
 
     public void leesFotoDirRecursief(String directoryName, List<File> files) {
-        File directory = new File(directoryName);
-        if (directory.exists()) {
-            // get all the files from a directory
-            File[] fList = directory.listFiles();
-            Arrays.sort(fList);
-            for (File file : fList) {
-                if (file.isFile()) {
-                    if (fileExtensionOke(file.getName())) {
-                        files.add(file);
+        // check if this dir is on the excludes list:
+        if (!isDirOnExcludesList(directoryName)) {
+            File directory = new File(directoryName);
+            if (directory.exists()) {
+                // get all the files from a directory
+                File[] fList = directory.listFiles();
+                Arrays.sort(fList);
+                for (File file : fList) {
+                    if (file.isFile()) {
+                        if (fileExtensionOke(file.getName())) {
+                            files.add(file);
+                        }
+                    } else if (file.isDirectory()) {
+                        leesFotoDirRecursief(file.getAbsolutePath(), files);
                     }
-                } else if (file.isDirectory()) {
-                    leesFotoDirRecursief(file.getAbsolutePath(), files);
                 }
             }
         }
     }
 
+    private boolean isDirOnExcludesList(String dirName) {
+        for (int j = 0; j < excludes.length; j++) {
+            if (dirName.contains(excludes[j])) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     private boolean fileExtensionOke(String fileName) {
         return fileName.toLowerCase().endsWith("jpg");
     }
 
     private File geefVolgendeFoto() {
-        if (i == fotos.size()) {
+        if (photos.isEmpty()) {
+            System.exit(0);
+        } else {
+        if (i == photos.size() - 1) {
+            i = 0;
+        } else
+            i++;
+        }
+        if (i == entryPoint) {
             System.out.println("exit");
             System.exit(0);
-            //leesFotoVerzameling();
         }
-        if (fotos.isEmpty()) {
-            System.exit(0);
-        }
-        return fotos.get(i++);
+        return photos.get(i);
     }
 
     @Override
@@ -91,9 +116,10 @@ class TimedAction implements ActionListener {
                 
                 File fotoFile = geefVolgendeFoto();
                 if (fotoFile != null) {
-                    foto.setFoto(fotoFile.getAbsolutePath());
-                    addDate(foto);
-                    addFotoText(foto, fotoFile.getParent());
+                    System.out.println(fotoFile.getAbsolutePath());
+                    photo.setFoto(fotoFile.getAbsolutePath());
+                    addDate(photo);
+                    addFotoText(photo, fotoFile.getParent());
                     basisFrame.repaint();
                 }
             } else {
