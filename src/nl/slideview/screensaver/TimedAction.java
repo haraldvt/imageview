@@ -138,7 +138,7 @@ class TimedAction implements ActionListener {
     private final int fotoTextXStart = 1140;
     private final JLabel[] fotoTextLabel = {new JLabel(), new JLabel(), new JLabel(), new JLabel(), new JLabel(), new JLabel(), new JLabel()};
     
-    private final int dateFontSize = 72;
+    private final int dateFontSize = 64;
     private final int dateLineSize = dateFontSize + 8;
     private final int dateYStart = 10;
     private final int dateXStart = 10;
@@ -216,7 +216,7 @@ class TimedAction implements ActionListener {
         SimpleDateFormat format = new SimpleDateFormat("EEEE", Locale.forLanguageTag("NL"));
         maxLabelWidth = Math.max(maxLabelWidth, addDateLabel(1, format.format(Calendar.getInstance().getTime()), foto, Font.BOLD));
 
-        format = new SimpleDateFormat("d LLLL YYYY", Locale.forLanguageTag("NL"));
+        format = new SimpleDateFormat("d LLL YYYY", Locale.forLanguageTag("NL"));
         maxLabelWidth = Math.max(maxLabelWidth, addDateLabel(2, format.format(Calendar.getInstance().getTime()), foto, Font.BOLD));
 
         maxLabelWidth = Math.max(maxLabelWidth, addDateLabel(3, "", foto, Font.BOLD));
