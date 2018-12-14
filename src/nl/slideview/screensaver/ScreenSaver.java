@@ -19,7 +19,14 @@ import javax.swing.WindowConstants;
 /**
  * in windows 10 / nederlands: instellingen: zoek op schermbeveiliging, daar kan je screensaver instellen
  * 
- * .exe wordt gemaakt met C:\tmp\slideview\java\launch4j, dan renamed naar .scr, en gekopieerd naar c:\windows\syswow64
+ * build
+ * start launch4j (C:\hvt\workspaces\launch4j, of C:\tmp\slideview\java\launch4j)
+ *   gebruik settings uit farpoint.xml
+ *   gebruikte jar: C:\hvt\workspaces\imageview\dist\slideview.jar
+ *   .exe wordt neergezet in C:\hvt\syncPhotoFarpoint\screensaver
+ * cloudstation kopieert de exe naar de doelcomputer
+ * op die computer, voer uit:
+ *   copyTowow64.cmd  (renamed naar .scr, en kopieert naar c:\windows\syswow64)
  * 
  * @author Harald
  */

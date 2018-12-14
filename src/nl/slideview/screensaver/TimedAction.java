@@ -6,15 +6,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.Month;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
-import java.util.StringTokenizer;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -51,7 +48,6 @@ class TimedAction implements ActionListener {
             entryPoint = new Random().nextInt(photos.size());
             System.out.println("Total number of photo's: " + photos.size() + ", entryPoint: " + entryPoint);
             i = entryPoint;
-            i=0;
         } else {
             i = -1;
         }
