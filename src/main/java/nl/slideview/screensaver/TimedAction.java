@@ -19,36 +19,29 @@ import javax.swing.JLabel;
 class TimedAction implements ActionListener {
 
     private final JFrame basisFrame;
-
     private final ImageComponent photo;
-
-    private final String photoDirectory;
-
-    private final String[] excludes;
-
+    private final Properties properties;
     private int entryPoint;
-
     private int i;
-
     private List<File> photos = new ArrayList<>();
 
-    public TimedAction(JFrame basisFrame, ImageComponent foto, String photoDirectory, String photoDirExcludes) {
+    public TimedAction(JFrame basisFrame, ImageComponent foto, Properties properties) {
         this.basisFrame = basisFrame;
         this.photo = foto;
-        this.photoDirectory = photoDirectory;
-        excludes = (photoDirExcludes != null ? photoDirExcludes.split(",") : new String[0]);
+        this.properties = properties;
 
         leesFotoVerzameling();
     }
 
     private void leesFotoVerzameling() {
         photos = new ArrayList<>();
-        leesFotoDirRecursief(photoDirectory, photos);
+        leesFotoDirRecursief(properties.getPhotoDirectory(), photos);
         if (!photos.isEmpty()) {
             entryPoint = new Random().nextInt(photos.size());
-            System.out.println("Total number of photo's: " + photos.size() + ", entryPoint: " + entryPoint);
+            Logger.log("Total number of photo's: " + photos.size() + ", entryPoint: " + entryPoint);
             i = entryPoint;
         } else {
+            Logger.log("No photos found, dir: " + properties.getPhotoDirectory());
             i = -1;
         }
     }
@@ -60,14 +53,16 @@ class TimedAction implements ActionListener {
             if (directory.exists()) {
                 // get all the files from a directory
                 File[] fList = directory.listFiles();
-                Arrays.sort(fList);
-                for (File file : fList) {
-                    if (file.isFile()) {
-                        if (fileExtensionOke(file.getName())) {
-                            files.add(file);
+                if (fList != null) {
+                    Arrays.sort(fList);
+                    for (File file : fList) {
+                        if (file.isFile()) {
+                            if (fileExtensionOke(file.getName())) {
+                                files.add(file);
+                            }
+                        } else if (file.isDirectory()) {
+                            leesFotoDirRecursief(file.getAbsolutePath(), files);
                         }
-                    } else if (file.isDirectory()) {
-                        leesFotoDirRecursief(file.getAbsolutePath(), files);
                     }
                 }
             }
@@ -75,21 +70,24 @@ class TimedAction implements ActionListener {
     }
 
     private boolean isDirOnExcludesList(String dirName) {
-        for (int j = 0; j < excludes.length; j++) {
-            if (dirName.contains(excludes[j])) {
-                return true;
-            }
-        }
-        return false;
+        return properties.getExcludes().stream().anyMatch(dirName::contains);
     }
     
     private boolean fileExtensionOke(String fileName) {
         return fileName.toLowerCase().endsWith("jpg");
     }
 
+    private void stop() {
+        stop(0);
+    }
+    private void stop(int status) {
+        Logger.log("exit " + status);
+        System.exit(status);
+    }
+
     private File geefVolgendeFoto() {
         if (photos.isEmpty()) {
-            System.exit(0);
+            stop();
         } else {
         if (i == photos.size() - 1) {
             i = 0;
@@ -97,8 +95,7 @@ class TimedAction implements ActionListener {
             i++;
         }
         if (i == entryPoint) {
-            System.out.println("exit");
-            System.exit(0);
+            stop();
         }
         return photos.get(i);
     }
@@ -106,27 +103,34 @@ class TimedAction implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         try {
-            SimpleDateFormat format = new SimpleDateFormat("HHmm", Locale.forLanguageTag("NL"));
-            String tijd = format.format(Calendar.getInstance().getTime());
-            if (tijd.compareTo("0700") > 0) {  // tussen 0 en 7 niets tonen
+            if (insideTimeFrame(Logger.getTime())) {
                 
                 File fotoFile = geefVolgendeFoto();
                 if (fotoFile != null) {
-                    System.out.println(fotoFile.getAbsolutePath());
                     photo.setFoto(fotoFile.getAbsolutePath());
                     addDate(photo);
                     addFotoText(photo, fotoFile.getParent());
-                    basisFrame.repaint();
+                    photo.setVisible(true);
                 }
             } else {
-                System.exit(0);
+                // laat niets zien
+                photo.setVisible(false);
             }
-            
+            basisFrame.repaint();
+
         } catch(Exception ex) {
-            System.out.println(ex.getMessage());
-            ex.printStackTrace();
+            Logger.log(ex.getMessage());
         }
     }
+
+    private boolean insideTimeFrame(String tijd) {
+        int start = Integer.parseInt(properties.getDailyTimeStart());
+        int stop = Integer.parseInt(properties.getDailyTimeStop());
+        int huidig = Integer.parseInt(tijd);
+        return (huidig > start && huidig < stop) ||
+                (start > stop && (huidig > start || huidig < stop));
+    }
+
 
     private final int fotoTextFontSize = 50;
     private final int fotoTextLineSize = fotoTextFontSize + 8;
@@ -184,11 +188,10 @@ class TimedAction implements ActionListener {
             }
         } catch (Exception e) {
             // slik...
-            System.out.println(e.getMessage());
+            Logger.log(e.getMessage());
             e.printStackTrace();
-        } finally {
-            return "";
         }
+        return "";
     }
     
     private double addFotoTextLabel(int regelnr, String text, ImageComponent foto) {
@@ -212,7 +215,7 @@ class TimedAction implements ActionListener {
         SimpleDateFormat format = new SimpleDateFormat("EEEE", Locale.forLanguageTag("NL"));
         maxLabelWidth = Math.max(maxLabelWidth, addDateLabel(1, format.format(Calendar.getInstance().getTime()), foto, Font.BOLD));
 
-        format = new SimpleDateFormat("d LLL YYYY", Locale.forLanguageTag("NL"));
+        format = new SimpleDateFormat("d LLL yyyy", Locale.forLanguageTag("NL"));
         maxLabelWidth = Math.max(maxLabelWidth, addDateLabel(2, format.format(Calendar.getInstance().getTime()), foto, Font.BOLD));
 
         maxLabelWidth = Math.max(maxLabelWidth, addDateLabel(3, "", foto, Font.BOLD));
@@ -239,11 +242,11 @@ class TimedAction implements ActionListener {
 
     
     private void refreshLabels(ImageComponent foto, JLabel[] labels) {
-        for (int j = 0; j < labels.length; j++) {
-            if (labels[j] != null) {
-                labels[j].setText("");
-                labels[j].removeAll();
-                foto.remove(labels[j]);
+        for (JLabel label : labels) {
+            if (label != null) {
+                label.setText("");
+                label.removeAll();
+                foto.remove(label);
                 //labels[j] = null;
             }
             //labels[j] = new JLabel();
