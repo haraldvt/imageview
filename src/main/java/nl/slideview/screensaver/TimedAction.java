@@ -1,20 +1,13 @@
 package nl.slideview.screensaver;
 
-import java.awt.Color;
-import java.awt.Font;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
-import java.util.Random;
-
-import javax.swing.JFrame;
-import javax.swing.JLabel;
+import java.util.*;
 
 class TimedAction implements ActionListener {
 

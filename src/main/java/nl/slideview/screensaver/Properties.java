@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 public class Properties {
     public static final String SLIDEVIEW_PROPERTIES = "c:\\slideview.properties";

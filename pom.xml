@@ -60,30 +60,29 @@
                 </configuration>
             </plugin>
 
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-<!--                <version>2.6</version>-->
-                <executions>
-                    <execution>
-                        <id>copy-resources</id>
-                        <phase>process-classes</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${basedir}/target/dist/</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${basedir}/dist/</directory>
-                                    <includes>
-                                        <include>**/*.*</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+<!--            <plugin>-->
+<!--                <artifactId>maven-resources-plugin</artifactId>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>copy-resources</id>-->
+<!--                        <phase>process-classes</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>copy-resources</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <outputDirectory>${basedir}/target/dist/</outputDirectory>-->
+<!--                            <resources>-->
+<!--                                <resource>-->
+<!--                                    <directory>${basedir}/dist/</directory>-->
+<!--                                    <includes>-->
+<!--                                        <include>**/*.*</include>-->
+<!--                                    </includes>-->
+<!--                                </resource>-->
+<!--                            </resources>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
 
             <plugin>
                 <groupId>com.akathist.maven.plugins.launch4j</groupId>
@@ -99,6 +98,7 @@
                             <headerType>gui</headerType>
                             <jar>${project.build.directory}/${artifactId}-${version}-shaded.jar</jar>
                             <outfile>${project.build.directory}/slideview.exe</outfile>
+                            <downloadUrl>x</downloadUrl>
                             <classPath>
                                 <mainClass>nl.slideview.screensaver.ScreenSaver</mainClass>
                                 <preCp>anything</preCp>
@@ -107,10 +107,10 @@
                                 <minVersion>1.8.0</minVersion>
                                 <maxVersion>1.9.0</maxVersion>
                                 <jdkPreference>preferJre</jdkPreference>
-                                <runtimeBits>64</runtimeBits>
-                                <bundledJre64Bit>true</bundledJre64Bit>
+                                <runtimeBits>64/32</runtimeBits>
+                                <bundledJre64Bit>false</bundledJre64Bit>
                                 <bundledJreAsFallback>false</bundledJreAsFallback>
-                                <path>dist/jre</path>
+                                <path>C:/Program Files (x86)/Java/jre1.8.0_191</path>
                             </jre>
                             <versionInfo>
                                 <fileVersion>1.0.0.0</fileVersion>

@@ -17,7 +17,10 @@ import java.awt.image.BufferedImage;
  * cloudstation kopieert de exe naar de doelcomputer
  * op die computer, voer uit:
  *   copyTowow64.cmd  (renamed naar .scr, en kopieert naar c:\windows\syswow64)
- * 
+ *
+ * compile and package : mvn -D skipTests clean package -e
+ * run from commanline : target\slideview.exe --l4j-debug
+ *
  * @author Harald
  */
 
