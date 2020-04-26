@@ -1,10 +1,14 @@
 package nl.slideview.screensaver;
 
+import lombok.Builder;
+import lombok.Getter;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.*;
@@ -15,8 +19,20 @@ class TimedAction implements ActionListener {
     private final ImageComponent photo;
     private final Properties properties;
     private int entryPoint;
-    private int i;
+    private int photoCounter;
     private List<File> photos = new ArrayList<>();
+
+    private final PhotoLabel photoLabel = PhotoLabel.builder()
+            .textFontSize(50)
+            .textLineSize(50 + 8)
+            .textYStart(830)
+            .textXStart(1140).build();
+    private final PhotoLabel dateLabel = PhotoLabel.builder()
+            .textFontSize(64)
+            .textLineSize(64 + 8)
+            .textYStart(10)
+            .textXStart(10).build();
+
 
     public TimedAction(JFrame basisFrame, ImageComponent foto, Properties properties) {
         this.basisFrame = basisFrame;
@@ -32,10 +48,10 @@ class TimedAction implements ActionListener {
         if (!photos.isEmpty()) {
             entryPoint = new Random().nextInt(photos.size());
             Logger.log("Total number of photo's: " + photos.size() + ", entryPoint: " + entryPoint);
-            i = entryPoint;
+            photoCounter = entryPoint;
         } else {
             Logger.log("No photos found, dir: " + properties.getPhotoDirectory());
-            i = -1;
+            photoCounter = -1;
         }
     }
 
@@ -82,15 +98,15 @@ class TimedAction implements ActionListener {
         if (photos.isEmpty()) {
             stop();
         } else {
-        if (i == photos.size() - 1) {
-            i = 0;
+        if (photoCounter == photos.size() - 1) {
+            photoCounter = 0;
         } else
-            i++;
+            photoCounter++;
         }
-        if (i == entryPoint) {
+        if (photoCounter == entryPoint) {
             stop();
         }
-        return photos.get(i);
+        return photos.get(photoCounter);
     }
 
     @Override
@@ -101,8 +117,8 @@ class TimedAction implements ActionListener {
                 File fotoFile = geefVolgendeFoto();
                 if (fotoFile != null) {
                     photo.setFoto(fotoFile.getAbsolutePath());
-                    addDate(photo);
-                    addFotoText(photo, fotoFile.getParent());
+                    addDate(photo, dateLabel);
+                    addFotoText(photo, photoLabel, fotoFile.getParent());
                     photo.setVisible(true);
                 }
             } else {
@@ -125,74 +141,46 @@ class TimedAction implements ActionListener {
     }
 
 
-    private final int fotoTextFontSize = 50;
-    private final int fotoTextLineSize = fotoTextFontSize + 8;
-    private final int fotoTextYStart = 830;
-    private final int fotoTextXStart = 1140;
-    private final JLabel[] fotoTextLabel = {new JLabel(), new JLabel(), new JLabel(), new JLabel(), new JLabel(), new JLabel(), new JLabel()};
-    
-    private final int dateFontSize = 64;
-    private final int dateLineSize = dateFontSize + 8;
-    private final int dateYStart = 10;
-    private final int dateXStart = 10;
-    private final JLabel[] dateLabel = {new JLabel(), new JLabel(), new JLabel(), new JLabel(), new JLabel(), new JLabel(), new JLabel()};
-    
-    private final int labelOpacity = 163;
 
-    private void addFotoText(ImageComponent foto, String path) {
-        refreshLabels(foto, fotoTextLabel);
+    private void addFotoText(ImageComponent foto, PhotoLabel photoLabel, String path) {
+        refreshLabels(foto, photoLabel.getTextLabel());
 
         String[] splittedDir = path.replace("\\", "/").split("/");
         int l = splittedDir.length;
         //jaartal: splittedDir[l - 2] , omschrijving splittedDir[l - 1])
 
-        double maxLabelWidth = addFotoTextLabel(0, "deze foto is uit:", foto);
+        double maxLabelWidth = addFotoTextLabel(0, photoLabel, "deze foto is uit:", foto);
         String maand = bepaalMaand(splittedDir[l - 1]);
-        maxLabelWidth = Math.max(maxLabelWidth, addFotoTextLabel(1, maand + splittedDir[l - 2], foto));
-        maxLabelWidth = Math.max(maxLabelWidth, addFotoTextLabel(2, "\"" + splittedDir[l - 1] + "\"", foto));
+        maxLabelWidth = Math.max(maxLabelWidth, addFotoTextLabel(1, photoLabel, maand + splittedDir[l - 2], foto));
+        maxLabelWidth = Math.max(maxLabelWidth, addFotoTextLabel(2, photoLabel, "\"" + splittedDir[l - 1] + "\"", foto));
         
         for (int j = 0; j < 3 /*fotoTextLabel.length*/; j++) {
-            JLabel jLabel = fotoTextLabel[j];
-            jLabel.setBounds(fotoTextXStart, fotoTextYStart + (j * fotoTextLineSize), (int)maxLabelWidth, fotoTextLineSize);
+            JLabel jLabel = photoLabel.getTextLabel()[j];
+            jLabel.setBounds(photoLabel.getTextXStart(), photoLabel.getTextYStart() + (j * photoLabel.getTextLineSize()),
+                    (int)maxLabelWidth, photoLabel.getTextLineSize());
         }
                 
     }
     
-    // hm de library kan dit 
     private String bepaalMaand(String beschrijving) {
         try {
-            int i = beschrijving.indexOf("-");
-            if (i>0) {
-                switch (beschrijving.substring(i+1, i+3)){
-                    case "01": return "januari ";
-                    case "02": return "februari ";
-                    case "03": return "maart ";
-                    case "04": return "april ";
-                    case "05": return "mei ";
-                    case "06": return "juni ";
-                    case "07": return "juli ";
-                    case "08": return "augustus ";
-                    case "09": return "september ";
-                    case "10": return "oktober ";
-                    case "11": return "november ";
-                    case "12": return "december ";
-                    default: return "";
-                }
+            int pos = beschrijving.indexOf("-");
+            if (pos > 0) {
+                int month = Integer.parseInt(beschrijving.substring(pos + 1, pos + 3));
+                return new DateFormatSymbols().getMonths()[month-1];
             }
         } catch (Exception e) {
-            // slik...
             Logger.log(e.getMessage());
-            e.printStackTrace();
         }
         return "";
     }
     
-    private double addFotoTextLabel(int regelnr, String text, ImageComponent foto) {
-        JLabel l = fotoTextLabel[regelnr];
+    private double addFotoTextLabel(int regelnr, PhotoLabel photoLabel, String text, ImageComponent foto) {
+        JLabel l = photoLabel.getTextLabel()[regelnr];
         l.setText(text);
-        l.setFont(new Font("Arial", Font.PLAIN, fotoTextFontSize));
+        l.setFont(new Font("Arial", Font.PLAIN, photoLabel.getTextFontSize()));
         l.setForeground(Color.WHITE);
-        l.setBackground(new Color(0, 0, 0, labelOpacity));
+        l.setBackground(new Color(0, 0, 0, photoLabel.getLabelOpacity()));
         l.setOpaque(true);
         foto.add(l);
         return l.getPreferredSize().getWidth();
@@ -200,34 +188,35 @@ class TimedAction implements ActionListener {
     
 
     
-    private void addDate(ImageComponent foto) {
-        refreshLabels(foto, dateLabel);
+    private void addDate(ImageComponent foto, PhotoLabel dateLabel) {
+        refreshLabels(foto, dateLabel.getTextLabel());
         
-        double maxLabelWidth = addDateLabel(0, "Vandaag is:", foto, Font.PLAIN);
+        double maxLabelWidth = addDateLabel(0, dateLabel, "Vandaag is:", foto, Font.PLAIN);
         
         SimpleDateFormat format = new SimpleDateFormat("EEEE", Locale.forLanguageTag("NL"));
-        maxLabelWidth = Math.max(maxLabelWidth, addDateLabel(1, format.format(Calendar.getInstance().getTime()), foto, Font.BOLD));
+        maxLabelWidth = Math.max(maxLabelWidth, addDateLabel(1, dateLabel, format.format(Calendar.getInstance().getTime()), foto, Font.BOLD));
 
         format = new SimpleDateFormat("d LLL yyyy", Locale.forLanguageTag("NL"));
-        maxLabelWidth = Math.max(maxLabelWidth, addDateLabel(2, format.format(Calendar.getInstance().getTime()), foto, Font.BOLD));
+        maxLabelWidth = Math.max(maxLabelWidth, addDateLabel(2, dateLabel, format.format(Calendar.getInstance().getTime()), foto, Font.BOLD));
 
-        maxLabelWidth = Math.max(maxLabelWidth, addDateLabel(3, "", foto, Font.BOLD));
+        maxLabelWidth = Math.max(maxLabelWidth, addDateLabel(3, dateLabel, "", foto, Font.BOLD));
 
         format = new SimpleDateFormat("HH:mm", Locale.forLanguageTag("NL"));
-        maxLabelWidth = Math.max(maxLabelWidth, addDateLabel(4, "Tijd: " + format.format(Calendar.getInstance().getTime()), foto, Font.BOLD));
+        maxLabelWidth = Math.max(maxLabelWidth, addDateLabel(4, dateLabel, "Tijd: " + format.format(Calendar.getInstance().getTime()), foto, Font.BOLD));
 
         for (int j = 0; j < 5 /*dateLabel.length*/; j++) {
-            JLabel jLabel = dateLabel[j];
-            jLabel.setBounds(dateXStart, dateYStart + (j * dateLineSize), (int)maxLabelWidth, dateLineSize);
+            JLabel jLabel = dateLabel.getTextLabel()[j];
+            jLabel.setBounds(dateLabel.getTextXStart(), dateLabel.getTextYStart() + (j * dateLabel.getTextLineSize()),
+                    (int)maxLabelWidth, dateLabel.getTextLineSize());
         }
     }
     
-    private double addDateLabel(int regelnr, String text, ImageComponent foto, int fontAppearance) {
-        JLabel l = dateLabel[regelnr];
+    private double addDateLabel(int regelnr, PhotoLabel dateLabel, String text, ImageComponent foto, int fontAppearance) {
+        JLabel l = dateLabel.getTextLabel()[regelnr];
         l.setText(text);
-        l.setFont(new Font("Arial", fontAppearance, dateFontSize));
+        l.setFont(new Font("Arial", fontAppearance, dateLabel.getTextFontSize()));
         l.setForeground(Color.WHITE);
-        l.setBackground(new Color(0, 0, 0, labelOpacity));
+        l.setBackground(new Color(0, 0, 0, dateLabel.getLabelOpacity()));
         l.setOpaque(true);
         foto.add(l);
         return l.getPreferredSize().getWidth();
@@ -240,9 +229,20 @@ class TimedAction implements ActionListener {
                 label.setText("");
                 label.removeAll();
                 foto.remove(label);
-                //labels[j] = null;
             }
-            //labels[j] = new JLabel();
         }
     }
+
+
+    @Getter
+    @Builder
+    private static class PhotoLabel {
+        private final int textFontSize;
+        private final int textLineSize;
+        private final int textYStart;
+        private final int textXStart;
+        private final JLabel[] textLabel = {new JLabel(), new JLabel(), new JLabel(), new JLabel(), new JLabel(), new JLabel(), new JLabel()};
+        private final int labelOpacity = 163;
+    }
+
 }

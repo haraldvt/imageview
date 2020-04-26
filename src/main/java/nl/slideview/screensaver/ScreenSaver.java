@@ -119,53 +119,53 @@ public final class ScreenSaver {
                 System.exit(0);
             }
         });
-        screenSaverFrame.addWindowStateListener(windowEvent -> {
-            Logger.log("windowStateChanged");
-            System.exit(0);
-        });
-        screenSaverFrame.addKeyListener(new KeyListener() {
-            @Override
-            public void keyTyped(KeyEvent keyEvent) {
-                Logger.log("keyTyped");
-                System.exit(0);
-            }
-
-            @Override
-            public void keyPressed(KeyEvent keyEvent) {
-                Logger.log("keyPressed");
-                System.exit(0);
-            }
-
-            @Override
-            public void keyReleased(KeyEvent keyEvent) {
-                Logger.log("keyReleased");
-                System.exit(0);
-            }
-        });
-        screenSaverFrame.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent focusEvent) {
-
-            }
-
-            @Override
-            public void focusLost(FocusEvent focusEvent) {
-                Logger.log("focusLost");
-                System.exit(0);
-            }
-        });
-        screenSaverFrame.addWindowFocusListener(new WindowFocusListener() {
-            @Override
-            public void windowGainedFocus(WindowEvent windowEvent) {
-
-            }
-
-            @Override
-            public void windowLostFocus(WindowEvent windowEvent) {
-                Logger.log("windowLostFocus");
-                System.exit(0);
-            }
-        });
+//        screenSaverFrame.addWindowStateListener(windowEvent -> {
+//            Logger.log("windowStateChanged");
+//            System.exit(0);
+//        });
+//        screenSaverFrame.addKeyListener(new KeyListener() {
+//            @Override
+//            public void keyTyped(KeyEvent keyEvent) {
+//                Logger.log("keyTyped");
+//                System.exit(0);
+//            }
+//
+//            @Override
+//            public void keyPressed(KeyEvent keyEvent) {
+//                Logger.log("keyPressed");
+//                System.exit(0);
+//            }
+//
+//            @Override
+//            public void keyReleased(KeyEvent keyEvent) {
+//                Logger.log("keyReleased");
+//                System.exit(0);
+//            }
+//        });
+//        screenSaverFrame.addFocusListener(new FocusListener() {
+//            @Override
+//            public void focusGained(FocusEvent focusEvent) {
+//
+//            }
+//
+//            @Override
+//            public void focusLost(FocusEvent focusEvent) {
+//                Logger.log("focusLost");
+//                System.exit(0);
+//            }
+//        });
+//        screenSaverFrame.addWindowFocusListener(new WindowFocusListener() {
+//            @Override
+//            public void windowGainedFocus(WindowEvent windowEvent) {
+//
+//            }
+//
+//            @Override
+//            public void windowLostFocus(WindowEvent windowEvent) {
+//                Logger.log("windowLostFocus");
+//                System.exit(0);
+//            }
+//        });
     }
 
 }

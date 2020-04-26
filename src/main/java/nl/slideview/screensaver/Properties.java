@@ -1,11 +1,14 @@
 package nl.slideview.screensaver;
 
+import lombok.Getter;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
+@Getter
 public class Properties {
     public static final String SLIDEVIEW_PROPERTIES = "c:\\slideview.properties";
 
@@ -15,30 +18,6 @@ public class Properties {
     private final String dailyTimeStart;
     private final String dailyTimeStop;
     private final List<String> excludes;
-
-    public int getTimeIntervalInSeconds() {
-        return timeIntervalInSeconds;
-    }
-
-    public String getPhotoDirectory() {
-        return photoDirectory;
-    }
-
-    public String getPhotoDirExcludes() {
-        return photoDirExcludes;
-    }
-
-    public List<String> getExcludes() {
-        return excludes;
-    }
-
-    public String getDailyTimeStart() {
-        return dailyTimeStart;
-    }
-
-    public String getDailyTimeStop() {
-        return dailyTimeStop;
-    }
 
     public Properties() {
         java.util.Properties properties = loadPropertiesFile();
