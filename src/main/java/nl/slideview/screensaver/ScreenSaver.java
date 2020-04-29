@@ -82,9 +82,10 @@ public final class ScreenSaver {
 
             @Override
             public void mouseMoved(MouseEvent e) {
-                Logger.log("mouseMoved");
                 if (l) {
-                    System.exit(0);
+                    stop("mouseMoved");
+                } else {
+                    Logger.log("mouseMoved");
                 }
                 l = true;
             }
@@ -93,14 +94,12 @@ public final class ScreenSaver {
 
             @Override
             public void mousePressed(MouseEvent e) {
-                Logger.log("mousePressed");
-                System.exit(0);
+                stop("mousePressed");
             }
 
             @Override
             public void mouseReleased(MouseEvent mouseEvent) {
-                Logger.log("mouseReleased");
-                System.exit(0);
+                stop("mouseReleased");
             }
 
             @Override
@@ -109,37 +108,31 @@ public final class ScreenSaver {
 
             @Override
             public void mouseExited(MouseEvent e) {
-                Logger.log("mouseExited");
-                System.exit(0);
+                stop("mouseExited");
             }
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                Logger.log("mouseClicked");
-                System.exit(0);
+                stop("mouseClicked");
             }
         });
 //        screenSaverFrame.addWindowStateListener(windowEvent -> {
-//            Logger.log("windowStateChanged");
-//            System.exit(0);
+//            stop("windowStateChanged");
 //        });
 //        screenSaverFrame.addKeyListener(new KeyListener() {
 //            @Override
 //            public void keyTyped(KeyEvent keyEvent) {
-//                Logger.log("keyTyped");
-//                System.exit(0);
+//                stop("keyTyped");
 //            }
 //
 //            @Override
 //            public void keyPressed(KeyEvent keyEvent) {
-//                Logger.log("keyPressed");
-//                System.exit(0);
+//                stop("keyPressed");
 //            }
 //
 //            @Override
 //            public void keyReleased(KeyEvent keyEvent) {
-//                Logger.log("keyReleased");
-//                System.exit(0);
+//                stop("keyReleased");
 //            }
 //        });
 //        screenSaverFrame.addFocusListener(new FocusListener() {
@@ -150,8 +143,7 @@ public final class ScreenSaver {
 //
 //            @Override
 //            public void focusLost(FocusEvent focusEvent) {
-//                Logger.log("focusLost");
-//                System.exit(0);
+//                stop("focusLost");
 //            }
 //        });
 //        screenSaverFrame.addWindowFocusListener(new WindowFocusListener() {
@@ -162,10 +154,16 @@ public final class ScreenSaver {
 //
 //            @Override
 //            public void windowLostFocus(WindowEvent windowEvent) {
-//                Logger.log("windowLostFocus");
-//                System.exit(0);
+//                stop("windowLostFocus");
 //            }
 //        });
     }
 
+    private void stop(String message) {
+        stop(0, message);
+    }
+    private void stop(int status, String message) {
+        Logger.log(message);
+        System.exit(status);
+    }
 }

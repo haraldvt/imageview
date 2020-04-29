@@ -5,13 +5,13 @@ package nl.slideview.screensaver;
 import org.junit.jupiter.api.Test;
 
 import java.text.DateFormatSymbols;
+import java.time.Month;
 
 
 class TimedActionTest {
 
     @Test
     public void testMonths() {
-
         System.out.println(getMonth(1));
         System.out.println(getMonth(11));
     }

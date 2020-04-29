@@ -141,13 +141,11 @@ class TimedAction implements ActionListener {
     }
 
 
-
     private void addFotoText(ImageComponent foto, PhotoLabel photoLabel, String path) {
         refreshLabels(foto, photoLabel.getTextLabel());
 
         String[] splittedDir = path.replace("\\", "/").split("/");
         int l = splittedDir.length;
-        //jaartal: splittedDir[l - 2] , omschrijving splittedDir[l - 1])
 
         double maxLabelWidth = addFotoTextLabel(0, photoLabel, "deze foto is uit:", foto);
         String maand = bepaalMaand(splittedDir[l - 1]);
@@ -165,11 +163,12 @@ class TimedAction implements ActionListener {
     private String bepaalMaand(String beschrijving) {
         try {
             int pos = beschrijving.indexOf("-");
-            if (pos > 0) {
+            if (pos > 0 && beschrijving.length() >= pos + 3) {
                 int month = Integer.parseInt(beschrijving.substring(pos + 1, pos + 3));
                 return new DateFormatSymbols().getMonths()[month-1];
             }
         } catch (Exception e) {
+            Logger.log(beschrijving);
             Logger.log(e.getMessage());
         }
         return "";
