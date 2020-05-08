@@ -104,7 +104,8 @@ class TimedAction implements ActionListener {
             photoCounter++;
         }
         if (photoCounter == entryPoint) {
-            stop();
+            Logger.log("nieuwe loop ");
+            //stop();
         }
         return photos.get(photoCounter);
     }
